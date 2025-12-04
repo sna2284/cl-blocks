@@ -270,6 +270,8 @@ function App() {
   const [selectedDimensions, setSelectedDimensions] = useState([])
   const [showSubheader, setShowSubheader] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [showSavedIndicator, setShowSavedIndicator] = useState(false)
+  const [savedIndicatorOpacity, setSavedIndicatorOpacity] = useState(0)
   const filterBlockRef = useRef(null)
   const editorRef = useRef(null)
   const blockRefs = useRef({})
@@ -577,6 +579,14 @@ function App() {
         if (result) {
           lastSavedRef.current = currentState
           console.log('✅ Auto-save completed')
+          setShowSavedIndicator(true)
+          setSavedIndicatorOpacity(1)
+          setTimeout(() => {
+            setSavedIndicatorOpacity(0)
+            setTimeout(() => {
+              setShowSavedIndicator(false)
+            }, 300)
+          }, 5000)
         } else {
           console.warn('⚠️ Auto-save returned false')
         }
@@ -606,14 +616,15 @@ function App() {
       }
     )
 
-    observer.observe(filterBlockRef.current)
+    const currentRef = filterBlockRef.current
+    observer.observe(currentRef)
 
     return () => {
-      if (filterBlockRef.current) {
-        observer.unobserve(filterBlockRef.current)
+      if (currentRef) {
+        observer.unobserve(currentRef)
       }
     }
-  }, [])
+  }, [blocks, loading])
 
   // Load report function (for sidebar navigation)
   const loadReport = async (reportId) => {
@@ -1272,7 +1283,14 @@ function App() {
           selectedDimensions,
           favorite: isFavorite
         })
-        toast.success('Saved successfully!', { duration: 2000 })
+        setShowSavedIndicator(true)
+        setSavedIndicatorOpacity(1)
+        setTimeout(() => {
+          setSavedIndicatorOpacity(0)
+          setTimeout(() => {
+            setShowSavedIndicator(false)
+          }, 300)
+        }, 5000)
       } else {
         toast.error('Failed to save')
       }
@@ -1311,6 +1329,11 @@ function App() {
             </a>
             <ChevronRight className="h-4 w-4 text-sidebar-foreground/40" />
             <span className="font-medium text-sidebar-foreground">{reportTitle || 'New report'}</span>
+            {/* {showSavedIndicator && (
+              <span className="text-sm text-muted-foreground transition-opacity duration-300" style={{ opacity: savedIndicatorOpacity }}>
+                Saved
+              </span>
+            )} */}
             {isReadOnly && (
               <Badge variant="secondary" className="font-medium text-gray-600">
                 <Eye className="h-3 w-3 mr-1" />
@@ -1319,18 +1342,6 @@ function App() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            {!isReadOnly && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-8 px-2.5"
-                onClick={handleManualSave}
-                title="Manual save (for testing)"
-              >
-                <Loader2 className="h-4 w-4 mr-1" />
-                Save
-              </Button>
-            )}
             <Button 
               variant="outline" 
               size="sm" 

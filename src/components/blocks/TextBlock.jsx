@@ -550,6 +550,10 @@ export default function TextBlock({ block, onUpdate, isFocused, onFocus, onComma
   }
 
   const handleSelection = () => {
+    if (isReadOnly) {
+      setShowToolbar(false)
+      return
+    }
     const selection = window.getSelection()
     if (selection.rangeCount > 0 && selection.toString().length > 0) {
       const range = selection.getRangeAt(0)
@@ -1162,10 +1166,10 @@ export default function TextBlock({ block, onUpdate, isFocused, onFocus, onComma
           Enter Heading here...
         </div>
       ))}
-      {showToolbar && (
+      {showToolbar && !isReadOnly && (
         <div
           ref={toolbarRef}
-          className="fixed z-[5] flex items-center gap-1 p-1 bg-popover border border-border rounded-lg shadow-lg"
+          className="fixed z-[5] flex items-center gap-1 p-1 bg-gray-900 border border-gray-700 rounded-lg shadow-lg"
           style={{
             top: `${toolbarPosition.top}px`,
             left: `${toolbarPosition.left}px`,
@@ -1174,7 +1178,7 @@ export default function TextBlock({ block, onUpdate, isFocused, onFocus, onComma
         >
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 px-2 text-popover-foreground hover:bg-accent hover:text-popover-foreground">
+              <Button variant="ghost" size="sm" className="h-8 px-2 text-white hover:bg-gray-800 hover:text-white">
                 {currentStyle === 'h1' && (
                   <span className="text-xs">Heading 1</span>
                 )}
@@ -1221,11 +1225,11 @@ export default function TextBlock({ block, onUpdate, isFocused, onFocus, onComma
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <div className="h-4 w-px bg-border mx-1" />
+          <div className="h-4 w-px bg-gray-700 mx-1" />
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 text-popover-foreground hover:bg-accent hover:text-popover-foreground"
+            className="h-8 w-8 p-0 text-white hover:bg-gray-800 hover:text-white"
             onClick={() => applyStyle('bold')}
           >
             <Bold className="h-4 w-4" />
@@ -1233,7 +1237,7 @@ export default function TextBlock({ block, onUpdate, isFocused, onFocus, onComma
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 text-popover-foreground hover:bg-accent hover:text-popover-foreground"
+            className="h-8 w-8 p-0 text-white hover:bg-gray-800 hover:text-white"
             onClick={() => applyStyle('italic')}
           >
             <Italic className="h-4 w-4" />
@@ -1241,7 +1245,7 @@ export default function TextBlock({ block, onUpdate, isFocused, onFocus, onComma
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 text-popover-foreground hover:bg-accent hover:text-popover-foreground"
+            className="h-8 w-8 p-0 text-white hover:bg-gray-800 hover:text-white"
             onClick={() => applyStyle('strikethrough')}
           >
             <Strikethrough className="h-4 w-4" />
@@ -1251,7 +1255,7 @@ export default function TextBlock({ block, onUpdate, isFocused, onFocus, onComma
               ref={linkButtonRef}
               variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0 text-popover-foreground hover:bg-accent hover:text-popover-foreground"
+              className="h-8 w-8 p-0 text-white hover:bg-gray-800 hover:text-white"
               onClick={handleLinkClick}
             >
               <Link className="h-4 w-4" />
@@ -1275,13 +1279,13 @@ export default function TextBlock({ block, onUpdate, isFocused, onFocus, onComma
                     linkSelectionRange.current = null
                   }
                 }}
-                className="h-8 w-48 text-sm bg-background border-border text-foreground placeholder:text-muted-foreground"
+                className="h-8 w-48 text-sm bg-gray-800 border-gray-700 text-white placeholder:text-gray-400"
                 autoFocus
               />
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 text-popover-foreground hover:bg-accent hover:text-popover-foreground"
+                className="h-8 w-8 p-0 text-white hover:bg-gray-800 hover:text-white"
                 onClick={() => {
                   setShowLinkDialog(false)
                   setLinkUrl('')
